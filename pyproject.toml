@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agnara-a8-distribution-matrix"
+version = "0.1.0"
+description = "Proyecto de validación exclusivo de Agnara 0.1.0a8"
+authors = [{ name = "Validation Script" }]
+requires-python = ">=3.14"
+
+dependencies = [
+    "agnara==0.1.0a8",
+    "agnara-a2a==0.1.0a8",
+    "agnara-cli==0.1.0a8",
+    "agnara-events==0.1.0a8",
+    "agnara-http==0.1.0a8",
+    "agnara-mcp==0.1.0a8",
+    "agnara-telemetry==0.1.0a8",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+]
