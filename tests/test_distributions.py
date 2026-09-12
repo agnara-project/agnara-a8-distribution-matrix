@@ -1,4 +1,5 @@
 import importlib.metadata
+
 import pytest
 
 DISTRIBUTIONS = [
@@ -47,11 +48,14 @@ def test_a2a_api_surface():
     It currently does not expose any public APIs (post-v0.1 placeholder).
     """
     import agnara_a2a
+
     # The __all__ declaration should be empty
     assert getattr(agnara_a2a, "__all__", None) == [], "agnara_a2a __all__ is not empty"
     # Ensure no hidden actual implementations are secretly exposed
     public_attrs = [attr for attr in dir(agnara_a2a) if not attr.startswith("_")]
-    assert len(public_attrs) == 0, f"agnara_a2a exposed unexpected public attributes: {public_attrs}"
+    assert len(public_attrs) == 0, (
+        f"agnara_a2a exposed unexpected public attributes: {public_attrs}"
+    )
 
 
 def test_events_api_surface():
@@ -60,9 +64,13 @@ def test_events_api_surface():
     It currently does not expose any public APIs (post-v0.1 placeholder).
     """
     import agnara_events
+
     # The __all__ declaration should be empty
-    assert getattr(agnara_events, "__all__", None) == [], "agnara_events __all__ is not empty"
+    assert getattr(agnara_events, "__all__", None) == [], (
+        "agnara_events __all__ is not empty"
+    )
     # Ensure no hidden actual implementations are secretly exposed
     public_attrs = [attr for attr in dir(agnara_events) if not attr.startswith("_")]
-    assert len(public_attrs) == 0, f"agnara_events exposed unexpected public attributes: {public_attrs}"
-
+    assert len(public_attrs) == 0, (
+        f"agnara_events exposed unexpected public attributes: {public_attrs}"
+    )

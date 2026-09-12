@@ -1,60 +1,108 @@
 # Agnara 0.1.0a8 Distribution Matrix
 
-Este repositorio contiene la validación exclusiva (desde fuera del monorepo) de las 7 distribuciones de la versión `0.1.0a8` de Agnara. Su propósito principal es asegurar que los paquetes se instalan limpiamente desde PyPI sin depender de repositorios Git, instalaciones editables, o paths locales, y documentar la superficie de API pública expuesta.
+Agnara distribution and compatibility validation matrix for release `0.1.0a8`.
 
-## Objetivo
-Validar que las 7 distribuciones de `0.1.0a8` se instalan de forma aislada, que exponen únicamente superficies públicas coherentes y que la instalación sea reproducible en una matriz de sistemas operativos.
+**Ecosystem Role**: Distribution Validator  
+**Target Agnara Release**: `0.1.0a8` (Frozen)  
+**Python Requirement**: `>=3.14`  
+**Status**: Validation Complete
 
-## Estructura
-- `pyproject.toml`: Define el proyecto de validación con dependencias estrictas (`==0.1.0a8`) apuntando a PyPI.
-- `tests/test_distributions.py`: Casos de prueba (`pytest`) que verifican la presencia de los paquetes, sus versiones y la superficie pública de API (especialmente confirmando que `agnara_a2a` y `agnara_events` son namespaces reservados vacíos).
-- `src/example.py`: Un ejecutable mínimo que demuestra la instanciación de las distribuciones, revelando el "gap" o comportamiento real documentado.
-- `.github/workflows/ci.yml`: Matriz de instalación limpia (Linux, Windows, macOS) usando un entorno virtual (`venv`) nuevo.
+## Mission
 
----
+This repository exists separately from Agnara Core to validate that the 7 distributions of `0.1.0a8` install cleanly from PyPI in an isolated environment, without depending on Git repositories, editable installs, or local paths. It documents the actual public API surface exposed by these packages, specifically highlighting missing implementations without inventing or mocking APIs.
 
-## Release validation
+## Scope
 
-### Información de Versión
-- **Versión de Agnara:** `0.1.0a8`
-- **Requisito de Python:** `>=3.14`
-- **Fuente de instalación:** PyPI
+**In Scope**:
+- Validating PyPI installation of `0.1.0a8` distributions.
+- Asserting correct package versions and metadata.
+- Documenting the real public API surface of placeholder packages (`agnara_a2a`, `agnara_events`).
+- Cross-platform verification (Linux, Windows, macOS).
 
-### Paquetes Instalados
-La validación engloba las siguientes distribuciones, fijadas a sus versiones exactas:
-1. `agnara==0.1.0a8`
-2. `agnara-a2a==0.1.0a8`
-3. `agnara-cli==0.1.0a8`
-4. `agnara-events==0.1.0a8`
-5. `agnara-http==0.1.0a8`
-6. `agnara-mcp==0.1.0a8`
-7. `agnara-telemetry==0.1.0a8`
+**Out of Scope**:
+- Providing functional A2A or Event broker capabilities.
+- Modifying or extending Agnara core features.
+- Testing any version other than `0.1.0a8`.
 
-### Comandos Reproducibles
+## Release / Compatibility Baseline
 
-Para recrear el entorno de validación (requiere Python 3.14):
+- **Agnara Core**: `==0.1.0a8`
+- **Distributions**: `agnara-a2a`, `agnara-cli`, `agnara-events`, `agnara-http`, `agnara-mcp`, `agnara-telemetry` (all pinned to `0.1.0a8`)
+- **Python**: `3.14`
+
+## Prerequisites
+
+- Python `>=3.14`
+
+## Quick Start
 
 ```bash
-# Crear un entorno limpio
+# Clone the repository
+git clone https://github.com/agnara-project/agnara-a8-distribution-matrix.git
+cd agnara-a8-distribution-matrix
+
+# Create a clean virtual environment
 python -m venv venv
-source venv/bin/activate # En Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Actualizar pip e instalar distribuciones exactas
-python -m pip install --upgrade pip
-pip install agnara==0.1.0a8 agnara-a2a==0.1.0a8 agnara-cli==0.1.0a8 agnara-events==0.1.0a8 agnara-http==0.1.0a8 agnara-mcp==0.1.0a8 agnara-telemetry==0.1.0a8
+# Install the validation matrix
+python -m pip install -e ".[dev]"
 
-# Ejecutar pruebas y demostración de API
-pip install pytest
-pytest tests/
+# Run the validation suite
+pytest -v
 python src/example.py
 ```
 
-### Hallazgos y Limitaciones (Gaps en la API)
+## Architecture and Conceptual Flow
 
-Durante la validación de la superficie pública, se ha detectado y documentado el estado real (sin simulaciones ni suposiciones) de las extensiones `agnara-a2a` y `agnara-events` en la versión `0.1.0a8`:
+This project executes a programmatic validation pipeline. It fetches distributions directly from PyPI into a pristine environment, then asserts via `tests/` that the structural metadata matches expected boundaries. 
 
-1. **agnara_a2a**: La distribución se instala correctamente desde PyPI, pero actúa exclusivamente como un *namespace* reservado para el trabajo Post-v0.1. El archivo principal expone de manera intencional una superficie pública vacía (`__all__ = []`) y no contiene APIs funcionales (ej. adaptadores, tareas o binding de protocolos).
-2. **agnara_events**: Similar al paquete A2A, se instala exitosamente pero sólo reserva la frontera del paquete para abstracciones de exposición de eventos. Expresa explícitamente `__all__ = []`.
-3. **Ausencia de Importaciones Namespace (agnara.events / agnara.a2a)**: No es posible importar desde `agnara.events` ni `agnara.a2a`. Los paquetes se instalan como módulos *top-level* (`agnara_a2a` y `agnara_events`). Intentar importar, por ejemplo, `from agnara.events import Broker` resulta en un `ImportError`.
+For a complete breakdown, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
-El proyecto comprueba esta situación programáticamente en `tests/test_distributions.py` y genera un caso de uso mínimo en `src/example.py` que captura las excepciones reales. No se ha intentado ocultar, "mockear" ni inventar APIs para estas librerías. Todo el ecosistema ha sido congelado exitosamente contra `0.1.0a8`.
+## Project Structure
+
+- `tests/`: Programmatic validation of package presence, metadata, and API gaps.
+- `src/`: Executable scripts demonstrating the actual API state.
+- `docs/`: Technical documentation regarding API boundaries and methodology.
+- `.agents/`: Agent instructions and skills for autonomous maintenance.
+- `.github/`: CI workflows and governance templates.
+
+## Testing and Verification
+
+Ensure code quality and validation integrity by running:
+
+```bash
+ruff format --check .
+ruff check .
+pytest -v
+```
+
+To see the live demonstration of the API state:
+```bash
+python src/example.py
+```
+
+## Known Limitations
+
+During validation of `0.1.0a8`, the following true gaps were documented:
+- `agnara-a2a` and `agnara-events` install successfully but act strictly as reserved namespaces. 
+- They intentionally expose an empty public surface (`__all__ = []`).
+- No namespace packages (`agnara.a2a` or `agnara.events`) exist; attempting to import implementations (e.g., `from agnara.events import Broker`) will correctly raise an `ImportError`.
+
+These limitations are asserted by the test suite and deliberately not mocked.
+
+## Relationship to Agnara
+
+This project is a standalone downstream validator for Agnara Core. It does not track `main` or development branches; it is forever historically frozen against the `0.1.0a8` alpha release.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on our branch model and quality gates. Note that we do not accept PRs that attempt to mock missing APIs or upgrade the Agnara dependency.
+
+## Security
+
+Please report vulnerabilities following our [Security Policy](SECURITY.md).
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

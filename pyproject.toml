@@ -5,9 +5,19 @@ build-backend = "hatchling.build"
 [project]
 name = "agnara-a8-distribution-matrix"
 version = "0.1.0"
-description = "Proyecto de validación exclusivo de Agnara 0.1.0a8"
-authors = [{ name = "Validation Script" }]
+description = "Distribution validation matrix for Agnara 0.1.0a8"
+authors = [{ name = "Agnara Project" }]
 requires-python = ">=3.14"
+readme = "README.md"
+license = "MIT"
+keywords = ["agnara", "python", "ai-agents", "distribution", "validation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+]
 
 dependencies = [
     "agnara==0.1.0a8",
@@ -19,7 +29,26 @@ dependencies = [
     "agnara-telemetry==0.1.0a8",
 ]
 
+[project.urls]
+Homepage = "https://github.com/agnara-project/agnara-a8-distribution-matrix"
+Repository = "https://github.com/agnara-project/agnara-a8-distribution-matrix.git"
+Issues = "https://github.com/agnara-project/agnara-a8-distribution-matrix/issues"
+
 [project.optional-dependencies]
-test = [
+dev = [
     "pytest>=8.0.0",
+    "ruff>=0.5.0",
+    "build>=1.2.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "W", "I"]
+ignore = []
