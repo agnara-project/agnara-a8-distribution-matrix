@@ -10,9 +10,10 @@ on:
 jobs:
   validate:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.14.0-alpha.x"] # Requires Python 3.14
+        python-version: ["3.14"]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -23,36 +24,34 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     
-    - name: Create Clean Virtual Environment (Unix)
-      if: runner.os != 'Windows'
+    - name: Create Clean Virtual Environment
       run: |
         python -m venv venv
         
-    - name: Create Clean Virtual Environment (Windows)
-      if: runner.os == 'Windows'
-      run: |
-        python -m venv venv
-        
-    - name: Install Distributions and Test (Unix)
+    - name: Run Gates (Unix)
       if: runner.os != 'Windows'
       run: |
-        ./venv/bin/python -m pip install --upgrade pip
-        # Exact pins from PyPI
-        ./venv/bin/pip install agnara==0.1.0a8 agnara-a2a==0.1.0a8 agnara-cli==0.1.0a8 agnara-events==0.1.0a8 agnara-http==0.1.0a8 agnara-mcp==0.1.0a8 agnara-telemetry==0.1.0a8
-        ./venv/bin/pip install pytest
-        # Validate test cases
-        ./venv/bin/pytest tests/
-        # Run example
-        ./venv/bin/python src/example.py
+        source venv/bin/activate
+        python -m pip install --upgrade pip
+        python -m pip install agnara==0.1.0a8 agnara-a2a==0.1.0a8 agnara-cli==0.1.0a8 agnara-events==0.1.0a8 agnara-http==0.1.0a8 agnara-mcp==0.1.0a8 agnara-telemetry==0.1.0a8
+        python -m pip install -e ".[dev]"
+        python -m pip check
+        ruff format --check .
+        ruff check .
+        pytest -v
+        python src/example.py
+        python -m build
 
-    - name: Install Distributions and Test (Windows)
+    - name: Run Gates (Windows)
       if: runner.os == 'Windows'
       run: |
-        .\venv\Scripts\python.exe -m pip install --upgrade pip
-        # Exact pins from PyPI
-        .\venv\Scripts\pip.exe install agnara==0.1.0a8 agnara-a2a==0.1.0a8 agnara-cli==0.1.0a8 agnara-events==0.1.0a8 agnara-http==0.1.0a8 agnara-mcp==0.1.0a8 agnara-telemetry==0.1.0a8
-        .\venv\Scripts\pip.exe install pytest
-        # Validate test cases
-        .\venv\Scripts\pytest.exe tests/
-        # Run example
-        .\venv\Scripts\python.exe src\example.py
+        .\venv\Scripts\Activate.ps1
+        python -m pip install --upgrade pip
+        python -m pip install agnara==0.1.0a8 agnara-a2a==0.1.0a8 agnara-cli==0.1.0a8 agnara-events==0.1.0a8 agnara-http==0.1.0a8 agnara-mcp==0.1.0a8 agnara-telemetry==0.1.0a8
+        python -m pip install -e ".[dev]"
+        python -m pip check
+        ruff format --check .
+        ruff check .
+        pytest -v
+        python src\example.py
+        python -m build

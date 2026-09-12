@@ -10,7 +10,7 @@ README is for humans. AGENTS is for machine execution and repository maintenance
 - **Purpose**: Validation from outside the monorepo that the 7 distributions of Agnara 0.1.0a8 install from PyPI without git/path dependencies, expose correct public surfaces, and can be verified correctly.
 - **Target Agnara Version**: `0.1.0a8` (Strict boundary)
 - **Python Version**: `>=3.14`
-- **Status**: Validation complete. Frozen for `0.1.0a8`.
+- **Status**: Historical / Frozen / Complete. Validation complete. Frozen for `0.1.0a8`.
 - **Mission**: Ensure a clean-room installation works properly, revealing actual gaps without mocking APIs.
 
 ## 2. Inviolable Architectural Constraints
@@ -57,14 +57,12 @@ python -m pip install -e ".[dev]"
 
 **Quality Gates**:
 ```bash
+python -m pip check
 ruff format --check .
 ruff check .
 pytest -v
-```
-
-**Demonstration Execution**:
-```bash
 python src/example.py
+python -m build
 ```
 
 ## 5. Public API / Integration Boundary
@@ -94,9 +92,15 @@ Any change to commands, architecture, or behavior must be synchronously updated 
 
 ## 9. Definition of Done
 
-Work is complete when:
-1. `ruff format --check .` passes.
-2. `ruff check .` passes.
-3. `pytest -v` passes.
-4. `python src/example.py` executes and properly documents gaps.
+Work is complete when all of the following quality gates pass:
+```bash
+python -m pip check
+ruff format --check .
+ruff check .
+pytest -v
+python src/example.py
+python -m build
+```
+
 5. All documentation matches the behavior.
+6. The GitHub Actions matrix is completely green on Ubuntu, Windows, macOS using CPython 3.14.

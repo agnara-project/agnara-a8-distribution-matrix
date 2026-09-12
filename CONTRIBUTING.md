@@ -37,10 +37,12 @@ python -m pip install -e ".[dev]"
 Before submitting a PR, ensure all gates pass:
 
 ```bash
+python -m pip check
 ruff format --check .
 ruff check .
 pytest -v
 python src/example.py
+python -m build
 ```
 
 ## Pull Request Process

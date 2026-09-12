@@ -14,3 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Executable example demonstrating actual API behavior for `agnara_a2a` and `agnara_events`.
 - GitHub Actions CI workflow for Linux, Windows, and macOS clean-room installation.
 - Complete Agnara-standard documentation and governance surface (AGENTS, ARCHITECTURE, CONTRIBUTING, SECURITY).
+
+### Closed / Frozen
+- Official technical closure of the `agnara-a8-distribution-matrix` project.
+- Permanently locked as a historical artifact for Agnara `0.1.0a8`.

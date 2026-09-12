@@ -5,7 +5,7 @@ Agnara distribution and compatibility validation matrix for release `0.1.0a8`.
 **Ecosystem Role**: Distribution Validator  
 **Target Agnara Release**: `0.1.0a8` (Frozen)  
 **Python Requirement**: `>=3.14`  
-**Status**: Validation Complete
+**Status**: Historical / Frozen / Complete
 
 ## Mission
 
@@ -68,18 +68,14 @@ For a complete breakdown, see [ARCHITECTURE.md](ARCHITECTURE.md).
 - `.github/`: CI workflows and governance templates.
 
 ## Testing and Verification
-
 Ensure code quality and validation integrity by running:
-
 ```bash
+python -m pip check
 ruff format --check .
 ruff check .
 pytest -v
-```
-
-To see the live demonstration of the API state:
-```bash
 python src/example.py
+python -m build
 ```
 
 ## Known Limitations
@@ -105,4 +101,4 @@ Please report vulnerabilities following our [Security Policy](SECURITY.md).
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [Apache License 2.0](LICENSE).
