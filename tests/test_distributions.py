@@ -3,6 +3,7 @@ import subprocess
 import sys
 
 import pytest
+from packaging.requirements import Requirement
 
 DISTRIBUTIONS = [
     "agnara",
@@ -32,24 +33,31 @@ def test_distribution_metadata(dist_name):
         version = importlib.metadata.version(dist_name)
         assert version == "0.1.0a8", f"{dist_name} has wrong version: {version}"
 
-        # Verify that if it's an extension, it depends on agnara==0.1.0a8
         if dist_name != "agnara":
             requires = importlib.metadata.requires(dist_name) or []
-            # We don't strictly assert the exact string because packaging metadata
-            # might format it differently, but we assert 'agnara' is in the list
-            # and ideally pinned.
-            agnara_reqs = [r for r in requires if r.startswith("agnara ")]
-            if agnara_reqs:
-                assert "0.1.0a8" in agnara_reqs[0], (
-                    f"{dist_name} doesn't depend on agnara 0.1.0a8: {agnara_reqs}"
+            # Find the dependency on 'agnara' (if it exists)
+            agnara_reqs = []
+            for req_str in requires:
+                req = Requirement(req_str)
+                if req.name == "agnara":
+                    agnara_reqs.append(req)
+
+            # According to our real historical state, all currently published extensions
+            # in 0.1.0a8 depend on agnara. If they don't, document it.
+            if not agnara_reqs:
+                pytest.fail(
+                    f"{dist_name} does not declare a dependency on agnara core. "
+                    "If this is a genuine PyPI anomaly, document it in "
+                    "PYPI_VALIDATION.md and bypass this check."
                 )
-            else:
-                agnara_reqs_strict = [r for r in requires if r.startswith("agnara==")]
-                if agnara_reqs_strict:
-                    assert "0.1.0a8" in agnara_reqs_strict[0], (
-                        f"{dist_name} doesn't depend on agnara 0.1.0a8: "
-                        f"{agnara_reqs_strict}"
-                    )
+
+            req = agnara_reqs[0]
+            # Ensure 0.1.0a8 is in the specifier, e.g. ==0.1.0a8
+            assert "0.1.0a8" in str(req.specifier), (
+                f"{dist_name} depends on agnara but does not strictly pin "
+                f"0.1.0a8: {req}"
+            )
+
     except importlib.metadata.PackageNotFoundError:
         pytest.fail(f"Distribution {dist_name} is not installed in the environment.")
 

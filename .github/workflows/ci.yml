@@ -17,41 +17,138 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v7
+    - name: Checkout
+      uses: actions/checkout@v4
     
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v7
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     
-    - name: Create Clean Virtual Environment
-      run: |
-        python -m venv venv
-        
-    - name: Run Gates (Unix)
+    - name: Create clean virtual environment (Unix)
+      if: runner.os != 'Windows'
+      run: python -m venv venv
+
+    - name: Create clean virtual environment (Windows)
+      if: runner.os == 'Windows'
+      run: python -m venv venv
+
+    - name: Upgrade pip (Unix)
       if: runner.os != 'Windows'
       run: |
         source venv/bin/activate
         python -m pip install --upgrade pip
-        python -m pip install agnara==0.1.0a8 agnara-a2a==0.1.0a8 agnara-cli==0.1.0a8 agnara-events==0.1.0a8 agnara-http==0.1.0a8 agnara-mcp==0.1.0a8 agnara-telemetry==0.1.0a8
-        python -m pip install -e ".[dev]"
-        python -m pip check
-        ruff format --check .
-        ruff check .
-        pytest -v
-        python src/example.py
-        python -m build
 
-    - name: Run Gates (Windows)
+    - name: Upgrade pip (Windows)
       if: runner.os == 'Windows'
       run: |
         .\venv\Scripts\Activate.ps1
         python -m pip install --upgrade pip
+
+    - name: Install Agnara 0.1.0a8 distributions from PyPI (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        source venv/bin/activate
         python -m pip install agnara==0.1.0a8 agnara-a2a==0.1.0a8 agnara-cli==0.1.0a8 agnara-events==0.1.0a8 agnara-http==0.1.0a8 agnara-mcp==0.1.0a8 agnara-telemetry==0.1.0a8
+
+    - name: Install Agnara 0.1.0a8 distributions from PyPI (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        .\venv\Scripts\Activate.ps1
+        python -m pip install agnara==0.1.0a8 agnara-a2a==0.1.0a8 agnara-cli==0.1.0a8 agnara-events==0.1.0a8 agnara-http==0.1.0a8 agnara-mcp==0.1.0a8 agnara-telemetry==0.1.0a8
+
+    - name: Install matrix development dependencies (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        source venv/bin/activate
         python -m pip install -e ".[dev]"
+
+    - name: Install matrix development dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        .\venv\Scripts\Activate.ps1
+        python -m pip install -e ".[dev]"
+
+    - name: Validate dependencies with pip check (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        source venv/bin/activate
         python -m pip check
+
+    - name: Validate dependencies with pip check (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        .\venv\Scripts\Activate.ps1
+        python -m pip check
+
+    - name: Ruff formatting check (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        source venv/bin/activate
         ruff format --check .
+
+    - name: Ruff formatting check (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        .\venv\Scripts\Activate.ps1
+        ruff format --check .
+
+    - name: Ruff lint check (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        source venv/bin/activate
         ruff check .
+
+    - name: Ruff lint check (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        .\venv\Scripts\Activate.ps1
+        ruff check .
+
+    - name: Pytest (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        source venv/bin/activate
         pytest -v
+
+    - name: Pytest (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        .\venv\Scripts\Activate.ps1
+        pytest -v
+
+    - name: Example smoke test (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        source venv/bin/activate
+        python src/example.py
+
+    - name: Example smoke test (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        .\venv\Scripts\Activate.ps1
         python src\example.py
+
+    - name: CLI smoke test (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        source venv/bin/activate
+        agnara --help
+
+    - name: CLI smoke test (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        .\venv\Scripts\Activate.ps1
+        agnara --help
+
+    - name: Build distribution matrix (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        source venv/bin/activate
+        python -m build
+
+    - name: Build distribution matrix (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        .\venv\Scripts\Activate.ps1
         python -m build
